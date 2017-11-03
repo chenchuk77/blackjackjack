@@ -1,0 +1,18 @@
+// models a card with value and suite
+class Card {
+
+   field int value; // screen location of the square's top-left corner
+   field String suit; // length of this square, in pixels
+
+   /** Constructs a new square with a given location and size. */
+   constructor Card new(int v, String s) {
+      let value = v;
+      let suit = s;
+      return this;
+   }
+
+   /** Accessors. */
+   method int getValue() { return value; }
+   method int getSuit() { return suit; }
+
+}

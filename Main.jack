@@ -1,0 +1,44 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/09/Square/Main.jack
+
+/** Initializes a new Square Dance game and starts running it. */
+class Main {
+    function void main() {
+        //var SquareGame game;
+        var int r1;
+        var Deck deck;
+        var int seed;
+
+        let seed = Keyboard.readInt("enter seed: ");
+      	//do ArrayUtils.seed(seed); // set seed for the whole game
+
+        let deck = Deck.new(seed);
+        do deck.showDeck();
+        //do Output.printString("-------------");
+        //do Output.println();
+
+        //do deck.showShuffledDeck();
+        //var Card card;
+        
+        //do Random.seed(5);
+        //let r1 = Random.next();
+        // do Output.printInt(r1);
+        // do Output.printString("-------------");
+        // do Output.printInt(Random.next());
+        // do Output.printString("-------------");
+        // do Output.printInt(Random.next());
+        // do Output.printString("-------------");
+        // do Output.printInt(Random.next());
+
+
+
+
+        //let game = SquareGame.new();
+        // let card = Card.new(4,"FOUR");
+        //do game.run();
+        //do game.dispose();
+        return;
+    }
+}

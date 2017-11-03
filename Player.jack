@@ -1,0 +1,34 @@
+class Player {
+
+   field String name; // length of this square, in pixels
+   field int money;   // screen location of the square's top-left corner
+
+   /** Constructs a new square with a given location and size. */
+   constructor Player new(String n, int m) {
+      let name = n;
+      let money = m;
+      do draw();
+      return this;
+   }
+
+   /** Disposes this square. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Draws the square on the screen. */
+   method void draw() {
+      do Screen.setColor(true);
+      do Screen.drawRectangle(10,10,48,96);
+      return;
+   }
+
+}
+
+// 16 16 16
+// 16
+// 16
+// 16
+// 16
+// 16
