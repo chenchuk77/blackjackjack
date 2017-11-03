@@ -1,44 +1,48 @@
 class Deck {
 
    static int SIZE;
-   field int seed;
-   field int size; // screen location of the square's top-left corner
-   // field String name; // length of this square, in pixels
-
    field Array cards;
-   field Array shuffledCards;
-   field Array positions;
+   field int topCardIndex;
 
-   /** Constructs a new deck. */
-   constructor Deck new(int seed) {
+   // new shuffled deck with 52 cards.
+   constructor Deck new() {
       let SIZE = 52;
-      let seed = seed;                 // seed for randomize
       let cards = Array.new(SIZE);     // array of Cards
-      do setCards();                   // set A23456789TJQK (13 cards * 4 suits)
-      let cards = ArrayUtils.shuffle(cards, SIZE, seed);
-
+      do addCards();                   // set A23456789TJQK (13 cards * 4 suits)
+      let cards = ArrayUtils.shuffle(cards, SIZE);
+      let topCardIndex = 0;
       return this;
    }
 
+   // show how many cards left in deck
+   method int remainingCards(){
+      return (SIZE - topCardIndex);
+   }
+
+   // deal the topmost card
+   method Card deal(){
+      var Card c;
+      let c = cards[topCardIndex];
+      let topCardIndex = topCardIndex + 1;
+      return c;
+   }
+
+   // print deck
    method void showDeck() {
       var int i;
       var Card c;
       let i = 0;
       while (i < SIZE) {
-         do Sys.wait(100);
+         //do Sys.wait(100);
          let c = cards[i];
-         do Output.printInt(i);
-         do Output.printString(":");
-         do Output.printInt(c.getValue());
-         do Output.printString(c.getSuit());
-         do Output.printString("...");
+         do Output.printInt(i);do Output.printString(":");do Output.printInt(c.getValue());do Output.printString(c.getSuit());do Output.printString("...");
          let i = i + 1;
       }
       return;
    }
 
    // setting 52 cards, 13 of each
-   method void setCards() {
+   method void addCards() {
       var int i;
       do Output.printString("setting cards...\n");
       let i = 0;

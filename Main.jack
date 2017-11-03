@@ -7,15 +7,53 @@
 class Main {
     function void main() {
         //var SquareGame game;
-        var int r1;
+        var Card c1, c2, c3, c4;
+        var Player player;
         var Deck deck;
         var int seed;
+        var String playerName;
 
-        let seed = Keyboard.readInt("enter seed: ");
-      	//do ArrayUtils.seed(seed); // set seed for the whole game
+        // let playerName = Keyboard.readLine("enter your name: ");
+        let seed = Keyboard.readInt("enter integer seed [1111-9999]: ");
+        let playerName = "chen";
+        //let seed = 2345
+      	do ArrayUtils.setSeed(seed); // set seed for the whole game
 
-        let deck = Deck.new(seed);
-        do deck.showDeck();
+        let deck = Deck.new();
+      	let player = Player.new(playerName);
+      	do player.newRound();
+
+      	do deck.showDeck();
+		
+		let c1 = deck.deal();
+
+
+		do Output.println();do Output.println();
+        
+
+
+        //player.setHandValue(c1)
+		do Output.printInt(player.setHandValue(c1));do Output.println();
+
+		let c2 = deck.deal();
+        //player.setHandValue(c2)
+		do Output.printInt(player.setHandValue(c2));do Output.println();
+
+		let c3 = deck.deal();
+        //player.setHandValue(c3)
+		do Output.printInt(player.setHandValue(c3));do Output.println();
+
+		let c4 = deck.deal();
+        //player.setHandValue(c4)
+		do Output.printInt(player.setHandValue(c4));do Output.println();
+
+        // do Output.printString("rem: ");do Output.printInt(deck.remainingCards());do Output.println();
+
+        // let c1 = deck.deal();
+        // do c1.printCard();
+        // let c2 = deck.deal();
+        // do c2.printCard();
+
         //do Output.printString("-------------");
         //do Output.println();
 

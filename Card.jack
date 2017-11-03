@@ -1,18 +1,25 @@
 // models a card with value and suite
 class Card {
 
-   field int value; // screen location of the square's top-left corner
-   field String suit; // length of this square, in pixels
+   field int value;    // screen location of the square's top-left corner
+   field String suit;  // length of this square, in pixels
 
-   /** Constructs a new square with a given location and size. */
+   // new Card with value: [0..12] to represent (A23456789TJQK) and suit: [h,d,c,s]
    constructor Card new(int v, String s) {
       let value = v;
       let suit = s;
       return this;
    }
 
-   /** Accessors. */
-   method int getValue() { return value; }
-   method int getSuit() { return suit; }
+   method int getValue() { 
+      return value; 
+   }
+   method int getSuit() { 
+      return suit; 
+   }
+   method void printCard(){
+      do Output.printString("[");do Output.printInt(value);do Output.printString(suit);do Output.printString("]");
+      return;
+   }
 
 }

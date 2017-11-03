@@ -2,33 +2,59 @@ class Player {
 
    field String name; // length of this square, in pixels
    field int money;   // screen location of the square's top-left corner
+   field int handValue;
 
    /** Constructs a new square with a given location and size. */
-   constructor Player new(String n, int m) {
+   constructor Player new(String n) {
       let name = n;
-      let money = m;
-      do draw();
+      let money = 1000;
       return this;
    }
 
-   /** Disposes this square. */
-   method void dispose() {
-      do Memory.deAlloc(this);
-      return;
+   method int getBalance(){
+      return money;
    }
 
-   /** Draws the square on the screen. */
-   method void draw() {
-      do Screen.setColor(true);
-      do Screen.drawRectangle(10,10,48,96);
+   method void newRound(){
+      let handValue = 0;
       return;
    }
+   method int setHandValue(Card c){
+      var int value;
 
+      let value = c.getValue();
+      // Ten/Jack/Queen/King values are 10
+      if (value > 8) {
+         let handValue = handValue + 10;
+         return handValue;
+      }
+      // Ace value are 11 or 1 (*** 1 if 11 bust)
+      if (value = 0){
+         // Ace must be 1
+         if (handValue > 10){
+            let handValue = handValue + 1;
+         // Ace is 11
+         } else {
+            let handValue = handValue + 11;
+         }
+      // card at value n has value of n+1
+      } else {
+         let handValue = handValue + value;
+      }
+      return handValue;
+   }
 }
 
-// 16 16 16
-// 16
-// 16
-// 16
-// 16
-// 16
+// [0] = A (1/11) 
+// [1] = 2 (2)
+// [2] = 3 (3)
+// [3] = 4 (4)
+// [4] = 5 (5)
+// [5] = 6 (6)
+// [6] = 7 (7)
+// [7] = 8 (8)
+// [8] = 9 (9)
+// [9] = T (10)
+// [10]= J (10)
+// [11]= Q (10)
+// [12]= K (10)

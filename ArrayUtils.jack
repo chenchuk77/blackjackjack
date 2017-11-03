@@ -1,10 +1,19 @@
 // static utilityfunctions 
 class ArrayUtils {
 
-   // clone an array
-   function Array copyOf(Array source, int length) {
+   static int seed;    // for Random
+
+   // set a seed and pass to Random
+   function void setSeed(int s) {
+      let seed = s;
+      do Random.seed(seed);
+      return;
+   }
+
+   // clone array to a new array 
+   function Array clone(Array source, int length) {
       var int i;
-      var String object; // using string but can be any object ???
+      var String object;               // using string but can be any object ???
       var Array dest;
       let dest = Array.new(length);    // array of Cards
 
@@ -17,20 +26,18 @@ class ArrayUtils {
       return dest;
    }
 
-   // randomize array by using input seed
-   function Array shuffle(Array source, int length, int seed){
+   // randomize order of objects in array of size length
+   function Array shuffle(Array source, int length){
       var Array dest;
       var Array temp;
-      var String object; // using string but can be any object ???
+      var String object;               // using string but can be any object ???
 
       var int random;
       var int lastIndex;
       var int destIndex;
       var int i;
 
-      do Random.seed(seed);
-
-      let temp = ArrayUtils.copyOf(source, length);
+      let temp = ArrayUtils.clone(source, length);
       let dest = Array.new(length);
 
       let lastIndex = length;
