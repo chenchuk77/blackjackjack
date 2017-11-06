@@ -1,3 +1,5 @@
+// a Deck is a randomly sorted collection of 52 cards
+// 
 class Deck {
 
    static int SIZE;
@@ -7,10 +9,23 @@ class Deck {
    // new shuffled deck with 52 cards.
    constructor Deck new() {
       let SIZE = 52;
-      let cards = Array.new(SIZE);     // array of Cards
-      do addCards();                   // set A23456789TJQK (13 cards * 4 suits)
+      do prepareDeck();
+      return this;
+   }
+
+   // shuffle a deck, will be used during init, and when re-shuffle
+   method void prepareDeck(){
+      let cards = Array.new(SIZE);
+      do addCards();                               // set A23456789TJQK (13 cards * 4 suits)
       let cards = ArrayUtils.shuffle(cards, SIZE);
       let topCardIndex = 0;
+      return;
+   }
+
+   // create a new deck when need to re-shuffle
+   method Deck replaceDeck(){
+      do cards.dispose();
+      do prepareDeck();
       return this;
    }
 
@@ -27,13 +42,12 @@ class Deck {
       return c;
    }
 
-   // print deck
+   // print deck - used for debug
    method void showDeck() {
       var int i;
       var Card c;
       let i = 0;
       while (i < SIZE) {
-         //do Sys.wait(100);
          let c = cards[i];
          do Output.printInt(i);do Output.printString(":");do Output.printInt(c.getValue());do Output.printString(c.getSuit());do Output.printString("...");
          let i = i + 1;
@@ -41,7 +55,7 @@ class Deck {
       return;
    }
 
-   // setting 52 cards, 13 of each
+   // setting 52 cards, 13 of each suit
    method void addCards() {
       var int i;
       do Output.printString("setting cards...\n");

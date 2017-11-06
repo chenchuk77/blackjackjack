@@ -1,8 +1,23 @@
-// models a card with value and suite
+// models a card with value and suit ( value is index ) in the following convention: 
+//
+// [0] = A (1/11) 
+// [1] = 2 (2)
+// [2] = 3 (3)
+// [3] = 4 (4)
+// [4] = 5 (5)
+// [5] = 6 (6)
+// [6] = 7 (7)
+// [7] = 8 (8)
+// [8] = 9 (9)
+// [9] = T (10)
+// [10]= J (10)
+// [11]= Q (10)
+// [12]= K (10)
+
 class Card {
 
-   field int value;    // screen location of the square's top-left corner
-   field String suit;  // length of this square, in pixels
+   field int value; 
+   field String suit;
 
    // new Card with value: [0..12] to represent (A23456789TJQK) and suit: [h,d,c,s]
    constructor Card new(int v, String s) {
@@ -11,14 +26,39 @@ class Card {
       return this;
    }
 
+   // card index
    method int getValue() { 
       return value; 
    }
+
+   // card suit (irrelevant for BJ game, can be usefull for other card games)
    method int getSuit() { 
       return suit; 
    }
+
+   // print card icon instead of value 
    method void printCard(){
-      do Output.printString("[");do Output.printInt(value);do Output.printString(suit);do Output.printString("]");
+      if (value = 0){
+         do Output.printString("[A");do Output.printString(suit);do Output.printString("]");
+         return;
+      }
+      if (value = 9){
+         do Output.printString("[T");do Output.printString(suit);do Output.printString("]");
+         return;
+      }
+      if (value = 10){
+         do Output.printString("[J");do Output.printString(suit);do Output.printString("]");
+         return;
+      }
+      if (value = 11){
+         do Output.printString("[Q");do Output.printString(suit);do Output.printString("]");
+         return;
+      }
+      if (value = 12){
+         do Output.printString("[K");do Output.printString(suit);do Output.printString("]");
+         return;
+      }
+      do Output.printString("[");do Output.printInt(value + 1);do Output.printString(suit);do Output.printString("]");
       return;
    }
 

@@ -1,82 +1,23 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/09/Square/Main.jack
+// Entry point that creates a BlackJack game object
+// for a specific player name. 
+// user need to input also a seed integer that will
+// be used for randomize numbers.
 
-/** Initializes a new Square Dance game and starts running it. */
 class Main {
     function void main() {
-        //var SquareGame game;
-        var Card c1, c2, c3, c4;
-        var Player player;
-        var Deck deck;
-        var int seed;
-        var String playerName;
-
-        // let playerName = Keyboard.readLine("enter your name: ");
-        let seed = Keyboard.readInt("enter integer seed [1111-9999]: ");
-        let playerName = "chen";
-        //let seed = 2345
+	    var int seed;
+        var String name;
+        var BlackJack game;
+		
+        let name = Keyboard.readLine("Please enter your name         : ");
+        let seed = Keyboard.readInt( "Enter integer seed [1111-9999] : ");
       	do ArrayUtils.setSeed(seed); // set seed for the whole game
 
-        let deck = Deck.new();
-      	let player = Player.new(playerName);
-      	do player.newRound();
-
-      	do deck.showDeck();
-		
-		let c1 = deck.deal();
-
-
-		do Output.println();do Output.println();
-        
-
-
-        //player.setHandValue(c1)
-		do Output.printInt(player.setHandValue(c1));do Output.println();
-
-		let c2 = deck.deal();
-        //player.setHandValue(c2)
-		do Output.printInt(player.setHandValue(c2));do Output.println();
-
-		let c3 = deck.deal();
-        //player.setHandValue(c3)
-		do Output.printInt(player.setHandValue(c3));do Output.println();
-
-		let c4 = deck.deal();
-        //player.setHandValue(c4)
-		do Output.printInt(player.setHandValue(c4));do Output.println();
-
-        // do Output.printString("rem: ");do Output.printInt(deck.remainingCards());do Output.println();
-
-        // let c1 = deck.deal();
-        // do c1.printCard();
-        // let c2 = deck.deal();
-        // do c2.printCard();
-
-        //do Output.printString("-------------");
-        //do Output.println();
-
-        //do deck.showShuffledDeck();
-        //var Card card;
-        
-        //do Random.seed(5);
-        //let r1 = Random.next();
-        // do Output.printInt(r1);
-        // do Output.printString("-------------");
-        // do Output.printInt(Random.next());
-        // do Output.printString("-------------");
-        // do Output.printInt(Random.next());
-        // do Output.printString("-------------");
-        // do Output.printInt(Random.next());
-
-
-
-
-        //let game = SquareGame.new();
-        // let card = Card.new(4,"FOUR");
-        //do game.run();
-        //do game.dispose();
-        return;
-    }
+      	let game = BlackJack.new();
+      	do game.setPlayer(name);
+      	do game.run();
+      	return;
+	}	
 }
+
+

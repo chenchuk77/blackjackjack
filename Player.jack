@@ -1,60 +1,107 @@
+// a Player is an boject that represent a BlackJack player (also a delaer).
+// it knows how to add cards to the hand value and evaluate the hand strength
+//
 class Player {
 
-   field String name; // length of this square, in pixels
-   field int money;   // screen location of the square's top-left corner
-   field int handValue;
+   field String name;          // length of this square, in pixels
+   field int money;            // screen location of the square's top-left corner
+   field int handValueLow;     // Ace can be 1/11
+   field int handValueHigh;
 
-   /** Constructs a new square with a given location and size. */
-   constructor Player new(String n) {
+   // create a new player with a given name/money
+   constructor Player new(String n, int m) {
       let name = n;
-      let money = 1000;
+      let money = m;
       return this;
    }
 
+   // show player name
+   method int getName(){
+      return name;
+   }
+              
+   // show player balance
    method int getBalance(){
       return money;
    }
 
+   // add player balance when win
+   method int addBalance(int amount){
+         let money = money + amount;
+      return money;
+   }
+
+   // betting. return 0 if player has no money
+   method int bet(int amount){
+      if (~(money < amount)){
+         let money = money - amount;
+         return amount;
+      }
+      return 0;
+   }
+
+   // init scores for starting a new round
    method void newRound(){
-      let handValue = 0;
+      let handValueLow = 0;
+      let handValueHigh = 0;
       return;
    }
-   method int setHandValue(Card c){
-      var int value;
 
-      let value = c.getValue();
-      // Ten/Jack/Queen/King values are 10
-      if (value > 8) {
-         let handValue = handValue + 10;
-         return handValue;
+   // returns the final BlackJack value of the hand
+   method int eval(){
+      if (handValueHigh > 21 ){
+         return handValueLow;
+      } else {
+         return handValueHigh;
       }
-      // Ace value are 11 or 1 (*** 1 if 11 bust)
-      if (value = 0){
-         // Ace must be 1
-         if (handValue > 10){
-            let handValue = handValue + 1;
-         // Ace is 11
+   }
+
+   // print hand value, can be x or x/y 
+   method void printHandValue(){
+      if ((handValueLow = handValueHigh) | (handValueHigh > 21)){
+         do Output.println();
+         do Output.printString("hand value:");
+         do Output.printInt(handValueLow);
+         do Output.println();
+      // at least 1 Ace exists, showing the 2 possible results
+      } else {
+         do Output.println();
+         do Output.printString("hand value:");
+         do Output.printInt(handValueLow);
+         do Output.printString("/");
+         do Output.printInt(handValueHigh);
+         do Output.println();
+      }
+      return;
+   }
+
+   // changing the object (handValues) state by adding a new card
+   method int setHandValue(Card c){
+      var int currentValue;
+
+      let currentValue = c.getValue();
+      // Ten/Jack/Queen/King values are 10
+      if (currentValue > 8) {
+         let handValueLow = handValueLow + 10;
+         let handValueHigh = handValueHigh + 10;
+         return eval();
+      }
+      // Ace value are 1 or 11
+      if (currentValue = 0){
+         // only first Ace split the results to +1 and +11
+         if (handValueLow = handValueHigh){
+            let handValueLow = handValueLow + 1;
+            let handValueHigh = handValueHigh + 11;
+         // other Ace adding +1 and +1
          } else {
-            let handValue = handValue + 11;
+            let handValueLow = handValueLow + 1;
+            let handValueHigh = handValueHigh + 1;
          }
       // card at value n has value of n+1
       } else {
-         let handValue = handValue + value;
+         let handValueLow = handValueLow + currentValue + 1;
+         let handValueHigh = handValueHigh + currentValue + 1;
       }
-      return handValue;
+      return eval();
    }
 }
-
-// [0] = A (1/11) 
-// [1] = 2 (2)
-// [2] = 3 (3)
-// [3] = 4 (4)
-// [4] = 5 (5)
-// [5] = 6 (6)
-// [6] = 7 (7)
-// [7] = 8 (8)
-// [8] = 9 (9)
-// [9] = T (10)
-// [10]= J (10)
-// [11]= Q (10)
-// [12]= K (10)

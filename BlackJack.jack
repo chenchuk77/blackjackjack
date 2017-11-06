@@ -1,78 +1,252 @@
-// This file is part of www.nand2tetris.org
-// and the book "The Elements of Computing Systems"
-// by Nisan and Schocken, MIT Press.
-// File name: projects/09/Square/BlackJack.jack
-
-/**
- * Implements the Square Dance game.
- * This simple game allows the user to move a black square around
- * the screen, and change the square's size during the movement.
- * When the game starts, a square of 30 by 30 pixels is shown at the
- * top-left corner of the screen. The user controls the square as follows.
- * The 4 arrow keys are used to move the square up, down, left, and right.
- * The 'z' and 'x' keys are used, respectively, to decrement and increment
- * the square's size. The 'q' key is used to quit the game.
- */
+// BlackJack set some constants, and go into a mainloop
+// each key pressed and game logic will be handled here
 
 class BlackJack {
-   // field Square square; // the square of this game
-   // field int direction; // the square's current direction: 
-   //                      // 0=none, 1=up, 2=down, 3=left, 4=right
+   // keys ASCII value to represent user keyboard input
+   static char BET; 
+   static char DEAL; 
+   static char HIT;
+   static char STAND; 
+   static char QUIT; 
+   static int DECK_THRESHOLD; 
 
-   /** Constructs a new Square Game. */
+   field int BET_AMOUNT;
+   field int START_BALANCE;
+   field boolean exit;
+   field boolean roundStarted;
+   field Player player;
+   field Player dealer;
+   field int playerHand;
+   field Deck deck;
+
+   // initialze a new BlackJack game
    constructor BlackJack new() {
-      // Creates a 30 by 30 pixels square and positions it at the top-left
-      // of the screen.
-      // let square = Square.new(0, 0, 30);
-      // let direction = 0;  // initial state is no movement
+      // constants
+      let BET   = 66;              // B key
+      let DEAL  = 68;              // D key
+      let HIT   = 72;              // H key
+      let STAND = 83;              // S key
+      let QUIT  = 81;              // Q key
+      let DECK_THRESHOLD  = 12;    // re-shuffle deck if remaining cards < 12
+
+      let deck = Deck.new();
+      //do deck.showDeck();        // use for debug
+      do Output.println();do Output.println();
+
+      do init();
       return this;
    }
 
-   // /** Disposes this game. */
-   // method void dispose() {
-   //    do square.dispose();
-   //    do Memory.deAlloc(this);
-   //    return;
-   // }
+   // fixed starting values, BET_AMOUNT can be changed during the game by pressing 'B'
+   method void init() {
+      let BET_AMOUNT     = 200;     // bet price for each round
+      let START_BALANCE  = 1000;    // fixed starting balance for player
+      return;
+   }
 
-   // /** Moves the square in the current direction. */
-   // method void moveSquare() {
-   //    if (direction = 1) { do square.moveUp(); }
-   //    if (direction = 2) { do square.moveDown(); }
-   //    if (direction = 3) { do square.moveLeft(); }
-   //    if (direction = 4) { do square.moveRight(); }
-   //    do Sys.wait(5);  // delays the next movement
-   //    return;
-   // }
+   // creating 2 players. Dealer will be played by the computer
+   method void setPlayer(String name) {
+      let player = Player.new(name, START_BALANCE);
+      let dealer = Player.new("Dealer", START_BALANCE); // START_BALANCE is irrelevant for a dealer
+      return;
+   }
 
-   // * Runs the game: handles the user's inputs and moves the square accordingly 
-   // method void run() {
-   //    var char key;  // the key currently pressed by the user
-   //    var boolean exit;
-   //    let exit = false;
-      
-   //    while (~exit) {
-   //       // waits for a key to be pressed
-   //       while (key = 0) {
-   //          let key = Keyboard.keyPressed();
-   //          do moveSquare();
-   //       }
-   //       if (key = 81)  { let exit = true; }     // q key
-   //       if (key = 90)  { do square.decSize(); } // z key
-   //       if (key = 88)  { do square.incSize(); } // x key
-   //       if (key = 131) { let direction = 1; }   // up arrow
-   //       if (key = 133) { let direction = 2; }   // down arrow
-   //       if (key = 130) { let direction = 3; }   // left arrow
-   //       if (key = 132) { let direction = 4; }   // right arrow
+   // show status report
+   method void printStatus(){
+      do Screen.clearScreen();
+      do Output.moveCursor(0,0);
+      do Output.printString("dealing new hand...");do Output.println();
+      do Output.printString("remaining cards    : ");do Output.printInt(deck.remainingCards());do Output.println();
+      do Output.printString("current bet        : ");do Output.printInt(BET_AMOUNT);do Output.println();
+      do Output.printString("player total       : ");do Output.printInt(player.getBalance());do Output.println();
+      do Output.println();
+      return;
+   }
 
-   //       // waits for the key to be released
-   //       while (~(key = 0)) {
-   //          let key = Keyboard.keyPressed();
-   //          do moveSquare();
-   //       }
-   //   } // while
-   //   return;
-   // }
+   // game main-loop. it reads the keyboard and react by the appropriate function/method
+   method void run() {
+      var char key;                             // the key currently pressed by the user
+      do printInstructions();
+      while (~exit) {
+         while (key = 0) {                      // waits for a key to be pressed
+            let key = Keyboard.keyPressed();
+         }
+         if ((key = DEAL) & (~(roundStarted)))  {
+            do dealNewHand();
+         }
+         if ((key = HIT) & (roundStarted))  {
+            do hit();
+         }
+         if ((key = BET) & (~(roundStarted)))  {
+            do changeBet();
+         }
+         if ((key = STAND) & (roundStarted))  {
+            do dealerPlaying();
+         }
+         if (key = QUIT) {
+            do quit();
+         }
+         while (~(key = 0)) {                   // waits for the key to be released
+            let key = Keyboard.keyPressed();
+         }
+      } // while
+      return;
+   }  
+
+   // instructions of the game
+   method void printInstructions() {
+      do Screen.clearScreen();
+      do Output.moveCursor(0,0);
+      do Output.printString("******************************************");do Output.println();
+      do Output.printString("        Welcome to Black-Jack-Jack");do Output.println();
+      do Output.printString(" Jack implementation for a BlackJack game");do Output.println();
+      do Output.printString("******************************************");do Output.println();do Output.println();
+      do Output.printString("Good luck ");do Output.printString(player.getName());do Output.println();
+      do Output.printString("House rules : Dealer must stand on soft 17");do Output.println();do Output.println();
+      do Output.printString("----------------- Rules -----------------");do Output.println();
+      do Output.printString("press 'D' to deal.");do Output.println();
+      do Output.printString("press 'Q' to quit.");do Output.println();
+      do Output.printString("press 'B' to change bet amount, currently ");do Output.printInt(BET_AMOUNT);do Output.println();
+      do Output.println();
+      do Output.printString("After being dealt 2 cards :");do Output.println();
+      do Output.printString("press 'H' to hit.");do Output.println();
+      do Output.printString("press 'S' to stand.");do Output.println();do Output.println();
+      do Output.printString("----------------- TODO (dev notes)-----------------");do Output.println();
+      do Output.printString("implement split/double-down features");do Output.println();
+      do Output.printString("add help menu shortcut");do Output.println();
+      return;
+   }
+
+   // player get a new card, checking if busted, or if got 21 ( both conditions finish the round)
+   method void hit() {
+      var Card c;
+      let c = deck.deal();
+      do c.printCard();
+      let playerHand = player.setHandValue(c);
+      do player.printHandValue();
+      if (playerHand > 21){
+         do Output.printString("player busted. (press 'D' to deal.)");do Output.println();do Output.println();
+         let roundStarted = false;
+         let playerHand = 0;
+      }
+      if (playerHand = 21){
+         do Output.printString("player got 21");do Output.println();do Output.println();
+         do Sys.wait(1000);
+         do dealerPlaying();
+         //let roundStarted = false;         
+         //let playerHand = 0;                     // TODO : check if necessary ???
+      }
+      return;
+   }
+
+   // change bet amount
+   method void changeBet() {
+      let BET_AMOUNT = Keyboard.readInt("change bet amount to: ");
+      do Output.printString("amount changed to: ");do Output.printInt(BET_AMOUNT);do Output.println();
+      return;
+   }
+
+   // starting a new round, if player got money then dealing 2 new cards
+   method void dealNewHand() {
+      var Card c;
+      //var int playerHand;
+      // dealling only if not dealt already, and if player got money
+      if ((~(player.getBalance() < BET_AMOUNT)) & (~(roundStarted))){
+         if (deck.remainingCards() < DECK_THRESHOLD ){
+            // shuffle deck if 12 cards left (or less)
+            do Output.printString("shuffling deck...");do Output.println();
+            let deck = deck.replaceDeck();
+         }
+         // set new round
+         do player.newRound();
+         do dealer.newRound();
+         do player.bet(BET_AMOUNT);
+         let roundStarted = true;
+         do printStatus();
+         // deal 2 starting cards
+         let c = deck.deal();
+         do c.printCard();
+         do player.setHandValue(c);
+         let c = deck.deal();
+         do c.printCard();
+         let playerHand = player.setHandValue(c);
+         do player.printHandValue();
+      } else {
+         do quit();
+      }
+      return;
+   }
+
+   // quitting the game
+   method void quit() {
+      do Output.printString("quitting...");do Output.println();
+      if (player.getBalance() > START_BALANCE ){
+         do Output.printString("you win ");
+         do Output.printInt(player.getBalance() - START_BALANCE);
+         do Output.printString("$. Casino manager is unhappy, there may be consequenses...");
+         do Output.println();
+      } else {
+         do Output.printString("you lose ");
+         do Output.printInt(START_BALANCE - player.getBalance());
+         do Output.printString("$. The casino likes you, please come back...");
+         do Output.println();
+      }
+      let exit = true;
+      return;
+   }
+
+   // after player stands / or player got 21 : dealer start playing.
+   method void dealerPlaying(){
+      var Card c;
+      var int dealerHand;
+
+      do Output.println();do Output.printString("-----------------");do Output.println();
+      do Output.printString("dealer playing...");do Output.println();do Output.println();
+
+      // deal 2 starting cards for dealer
+      let c = deck.deal();
+      do c.printCard();
+      do dealer.setHandValue(c);
+      let c = deck.deal();
+      do c.printCard();
+      let dealerHand = dealer.setHandValue(c);
+      do dealer.printHandValue();
+      // dealer hits unconditionally until reach 17 (or soft: ie. 'A6'), then he must stand.
+      while (dealerHand < 17){
+         do Sys.wait(1000);
+         let c = deck.deal();
+         do c.printCard();
+         let dealerHand = dealer.setHandValue(c);
+         do dealer.printHandValue();
+
+      }
+      // if dealer busted - player wins the round
+      if (dealerHand > 21){
+         do Output.printString("dealer busted. you win ");
+         do Output.printInt(BET_AMOUNT);
+         do Output.printString(" $ (press 'D' to deal.)");do Output.println();do Output.println();
+         do player.addBalance(BET_AMOUNT * 2); // player money + dealer money
+      } else {
+         // dealer wins
+         if (dealerHand > playerHand) {
+            do Output.printString("dealer wins. (press 'D' to deal.)");do Output.println();do Output.println();
+         } else {
+            // player wins
+            if (dealerHand < playerHand) {
+               do Output.printString("you win ");
+               do Output.printInt(BET_AMOUNT);
+               do Output.printString(" $ (press 'D' to deal.)");do Output.println();do Output.println();
+               do player.addBalance(BET_AMOUNT * 2);
+            // its a push
+            }else {
+               do Output.printString("its a push. (press 'D' to deal.)");do Output.println();do Output.println();
+               do player.addBalance(BET_AMOUNT);
+            }
+         }
+      }
+      let roundStarted = false;
+      return;
+   }
 }
 
 
